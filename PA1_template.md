@@ -1,11 +1,6 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-author: "msuppo"
-date: "18/07/2015"
-output:
-  html_document:
-    keep_md: true    
----
+# Reproducible Research: Peer Assessment 1
+msuppo  
+18/07/2015  
 
 # Synopsis
 The purpose of this project was practicing:
@@ -48,7 +43,8 @@ The dataset is stored in a comma-separated-value (CSV) file and there are a tota
 
 The code for Problem statement 1 and 2 is the folowing:
 
-```{r, echo = TRUE}
+
+```r
 library(ggplot2)
 library(lattice)
 library(plyr)
@@ -71,8 +67,20 @@ tabla <- read_data()
 
 Examine the data
 
-```{r}
+
+```r
 summary(tabla)
+```
+
+```
+##      steps             date               interval     
+##  Min.   :  0.00   Min.   :2012-10-01   Min.   :   0.0  
+##  1st Qu.:  0.00   1st Qu.:2012-10-16   1st Qu.: 588.8  
+##  Median :  0.00   Median :2012-10-31   Median :1177.5  
+##  Mean   : 37.38   Mean   :2012-10-31   Mean   :1177.5  
+##  3rd Qu.: 12.00   3rd Qu.:2012-11-15   3rd Qu.:1766.2  
+##  Max.   :806.00   Max.   :2012-11-30   Max.   :2355.0  
+##  NA's   :2304
 ```
 
 
@@ -82,7 +90,8 @@ The missing values in the dataset are ignored tor this part of the assignment
 
 **- Problem statement 1:** Calculate the total number of steps taken per day
 
-```{r}
+
+```r
 tablabyDay <- aggregate(steps ~ date, tabla, sum, na.action = na.pass)
 ```
 
@@ -92,21 +101,25 @@ tablabyDay <- aggregate(steps ~ date, tabla, sum, na.action = na.pass)
 
 Histogram of the total number of steps taken by Day and plotted with a bin interval of 2500 steps.
 
-```{r}
+
+```r
 ggplot(tablabyDay, aes(x = steps)) + geom_histogram(binwidth = 2500, colour = "orchid", 
     fill = "grey") + labs(title = "Steps Taken per Day", x = "Number of Steps", 
     y = "Frequency")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
 **- Problem statement 3:** Calculate and report the mean and median of the total number of steps taken per day
 
 
-```{r}
+
+```r
 daily_steps_mean   <- mean(tablabyDay$steps, na.rm=TRUE)
 daily_steps_median <- median(tablabyDay$steps, na.rm=TRUE)
 ```
-The **Mean** is: `r daily_steps_mean`  
-The **Median** is: `r daily_steps_median`     
+The **Mean** is: 1.0766189\times 10^{4}  
+The **Median** is: 1.0765\times 10^{4}     
 
 
 
@@ -116,21 +129,25 @@ The **Median** is: `r daily_steps_median`
 **- Problem statement 1:** Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
 
-```{r}
+
+```r
 tablabyInterval <- aggregate(steps ~ interval, data = tabla, mean, na.rm = TRUE)
 ggplot(data=tablabyInterval,aes(x=interval,y=steps))+ geom_line(color = "purple", size = 1)+
 labs(title="Time Series Plot of Average of Steps taken Daily", x="Interval", y="Average Number of Steps Taken") 
-```    
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
     
 
 **- Problem statement 2:** Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 
-```{r}
+
+```r
 interval_max <-tablabyInterval[which.max(tablabyInterval$steps), ]$interval
 ```
 
-The 5-minute interval that contains the maximum number of steps is the **`r interval_max`th**
+The 5-minute interval that contains the maximum number of steps is the **835th**
 
 
 
@@ -141,28 +158,29 @@ Note that there are a number of days/intervals where there are missing values (c
 
 **- Problem statement 1:** Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
-```{r}
+
+```r
 missing_valores <- sum(is.na(tabla$steps))
 ```
 
-The total number of **missing values** are **`r missing_valores`**  
+The total number of **missing values** are **2304**  
 
 **- Problem statement 2:** Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
 The strategy for filing in all of the missing values was using the mean for that 5-minute interval. So, the function "meanIntSteps" was defined to get the mean steps for particular 5-minute interval.  
 
-```{r}
 
+```r
 meanIntSteps <- function(interval) {
     tablabyInterval[tablabyInterval$interval == interval, ]$steps
 }
-
 ```
   
 **- Problem statement 3:** Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
 
-```{r}
+
+```r
 tabla2 <- tabla  
 count = 0  
 for (i in 1:nrow(tabla2)) {
@@ -173,26 +191,30 @@ for (i in 1:nrow(tabla2)) {
 }
 missing_valores2 <- sum(is.na(tabla2$steps))
 ```
-The total number of **missing values** in the new dataset is **`r missing_valores2`**  
+The total number of **missing values** in the new dataset is **0**  
 
 **- Problem statement 4:** Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-```{r}
 
+```r
 tablabyDay2 <- aggregate(steps ~ date, data = tabla2, sum)
 ggplot(tablabyDay2, aes(x = steps)) + geom_histogram(binwidth = 2500, colour = "orchid", 
     fill = "grey") + labs(title = "Steps Taken per Day (with NA filled)", x = "Number of Steps", 
     y = "Frequency")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
+
+```r
 daily_steps_mean2   <- mean(tablabyDay2$steps)
 daily_steps_median2 <- median(tablabyDay2$steps)
 ```
 
-The **previous Mean** is: `r daily_steps_mean`  
-The **previous Median** is: `r daily_steps_median`     
+The **previous Mean** is: 1.0766189\times 10^{4}  
+The **previous Median** is: 1.0765\times 10^{4}     
 
-The **new Mean** with NA filled:  `r daily_steps_mean2`  
-The **new Median** with NA filled: `r daily_steps_median2`     
+The **new Mean** with NA filled:  1.0766189\times 10^{4}  
+The **new Median** with NA filled: 1.0766189\times 10^{4}     
 
 
 
@@ -207,7 +229,8 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 
 **- Problem statement 1:** Create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
-```{r}
+
+```r
 tabla2$day = ifelse(as.POSIXlt(as.Date(tabla2$date))$wday%%6 == 
     0, "weekend", "weekday")
 tabla2$day = factor(tabla2$day, levels = c("weekday", "weekend"))
@@ -216,9 +239,11 @@ tabla2$day = factor(tabla2$day, levels = c("weekday", "weekend"))
 **- Problem statement 2:** Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
 
 
-```{r}
+
+```r
 tablabyInterval2 <- aggregate(steps ~ interval + day, tabla2, mean)
 xyplot(steps ~ interval | factor(day), data = tablabyInterval2, aspect = 1/2, 
     type = "l", main = "Average Steps by 5-minute Interval for Weekends and Weekdays")
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
